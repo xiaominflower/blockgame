@@ -42,13 +42,15 @@ Game.prototype ={
 	},
 	gameover:function(){
 		clearInterval(this.timer);
-		alert('gameover');
+        document.querySelector('#pop').className ='';
 	},
-	resurrection:function(){ //复活
-		this.state =0;
-		game.ball.angle = -30;
-
-	}
+    replay:function(){
+        this.state =0;
+        game.ball.angle = -30;
+        this.score = 0;
+        score.innerHTML = this.score;
+        this.run();
+    }
 }
 
 //资源加载
@@ -113,9 +115,11 @@ Ball.prototype ={
 			if(this.y >game.tray.y+30-this.dia){ //此时失败了
 				this.speed = 15;
 				if(this.y>game.tray.y+30){
+				    replay.innerHTML = "再试一次";
 					game.gameover();
+                    this.speed = 10;
 				}
-				//game.resurrection() //复活
+
 			}
 		}else{
 			this.x = game.tray.x+50-this.dia/2;
@@ -137,6 +141,7 @@ function Block(row,col,color){
 	this.height = 30;
 	this.x = 50+this.col*(this.width+10); //50分别是距离画布的位置
 	this.y = 200+this.row*(this.height+10);
+
 }
 
 Block.prototype ={
@@ -168,6 +173,9 @@ Block.prototype ={
 		var k = game.ball.dia/2;
 		if((game.ball.x > this.x -k) && (game.ball.x < this.x + this.width + k)){
 			if(game.ball.y > this.y + this.height && game.ball.y < this.y + this.height + k || game.ball.y > this.y - k && game.ball.y < this.y){
+				game.score++;
+				score.innerHTML = game.score;
+
 				game.blockManager.blocks[this.row][this.col] = null;
 				game.ball.angle = 360 - game.ball.angle;
 				if(game.blockManager.stars[this.row][this.col]){
@@ -179,7 +187,8 @@ Block.prototype ={
 		//左边、右边
 		if(game.ball.y > this.y && game.ball.y < this.y + this.height){
 			if(game.ball.x > this.x - k && game.ball.x < this.x || game.ball.x > this.x + this.width && game.ball.x < this.x + this.width + 2){
-
+				game.score++;
+				score.innerHTML = game.score;
 				game.blockManager.blocks[this.row][this.col] = null;
 				game.ball.angle = 180 - game.ball.angle;
 				if(game.blockManager.stars[this.row][this.col]){
@@ -187,6 +196,21 @@ Block.prototype ={
 				}
 			}
 		}
+
+        this.count =0;
+        for(var r=0; r<game.blockManager.blocks.length; r ++){
+            for(var c=0; c<6; c++){
+                if(game.blockManager.blocks[r][c] != null){
+                    this.count ++;
+                }
+            }
+        }
+
+        if(!this.count){ //结束
+            replay.innerHTML = '咦~~~给你能耐的！'
+            game.gameover();
+        }
+
 	},
 	render:function(){
 		game.ctx.drawImage(game.imgs.block,(this.color-1)*(this.width+10),0,this.width,this.height,this.x,this.y,this.width,this.height)
@@ -196,14 +220,14 @@ Block.prototype ={
 //砖块管理
 function BlockManager(){
 	this.map =[
-		[3,0,2,0,0,1],
-		[0,2,2,3,0,4],
-		[0,4,1,0,4,0],
-		[5,1,1,0,0,3],
-		[0,1,0,3,0,2],
-		[5,1,0,3,1,2],
-		[2,1,0,3,0,2],
-		[0,1,4,3,2,2]
+        [3,0,2,0,0,1],
+        [0,2,2,3,0,4],
+        [0,4,1,0,4,0],
+        [5,1,1,0,0,3],
+        [0,1,0,3,0,2],
+        [5,1,0,3,1,2],
+        [2,1,0,3,0,2],
+        [0,1,4,3,2,2]
 	];
 
 	this.blocks = [];
@@ -304,7 +328,7 @@ Star.prototype = {
 		if(this.x > game.tray.x-10 && this.x<game.tray.x+100+10){
 			if(this.y>game.tray.y-10){
 				//console.log("接住加分");
-				game.score+=10;
+				game.score+=100;
 				score.innerHTML = game.score;
 				game.blockManager.stars[this.r][this.c] = null;
 			}

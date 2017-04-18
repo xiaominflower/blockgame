@@ -30,6 +30,9 @@ a img { border: 0 none; }
 /*  */
 canvas{ display: block; width:100%; height:100%;background:#171F2A;}
 header{ position: absolute; left:0; top:0; color: #fff; padding:10px}
+#pop{ position: absolute; left:0; top:0; width:100%; height:100%; background: rgba(0,0,0,0.8); display: -webkit-box; display: -webkit-flexbox; display: flex; -webkit-box-align: center;-webkit-align-items:center;align-items:center;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center; }
+#pop.hide{ display: none;}
+#replay{ padding:0 20px; height:50px; text-align: center; font-size:24px; line-height:50px; background: #c00; color:#fff;}
 </style>
 
 </head>
@@ -37,10 +40,16 @@ header{ position: absolute; left:0; top:0; color: #fff; padding:10px}
 
 <canvas width="640" height="1008" id="mycanvas"></canvas>
 <header>得分: <span id="score">0</span> </header>
+<div class="hide" id="pop">
+    <span id="replay">再来一次</span>
+</div>
 <script src="game.js"></script>
 <script>
 	var game = new Game({"canvasid" : "mycanvas"});
-
+    replay.addEventListener('click',function(){
+        document.querySelector('#pop').className ='hide';
+        game.replay();
+    })
 </script>
 </body>
 </html>
